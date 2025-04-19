@@ -15,6 +15,12 @@ export default function CheckoutPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardName: ''
+  });
 
   const total = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -23,26 +29,33 @@ export default function CheckoutPage() {
 
   const createOrder = async (item: any) => {
     try {
+      // Log the data being sent
+      console.log('Customer Info:', customerInfo);
+      
       const requestBody = {
-        product_id: item.product._id, // Changed from .id to ._id
+        product_id: item.product._id,
         quantity: item.quantity,
         selected_size: item.selectedSize,
-        selected_color: item.selectedColor
+        selected_color: item.selectedColor,
+        shipping_details: {
+          name: customerInfo.name,
+          address: customerInfo.address,
+          phone: customerInfo.phone,
+          email: customerInfo.email || currentUser?.email
+        }
       };
       
-      console.log('Creating order with:', requestBody);
+      console.log('Sending order data:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch('http://localhost:5000/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();
-      console.log('Order response:', data);
+      console.log('Order creation response:', data);
       
       if (!response.ok) {
         throw new Error(data.message || 'Failed to create order');
@@ -192,6 +205,112 @@ export default function CheckoutPage() {
               onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
               className="w-full px-3 py-2 border rounded"
             />
+          </div>
+        </div>
+
+        {/* Add Payment Information Section */}
+        <div className="border-t mt-8 pt-8">
+          <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Card Number
+              </label>
+              <input
+                type="text"
+                maxLength={19}
+                placeholder="1234 5678 9012 3456"
+                value={paymentDetails.cardNumber}
+                onChange={(e) => {
+                  const formatted = e.target.value
+                    .replace(/\s/g, '')
+                    .match(/.{1,4}/g)?.join(' ') || '';
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    cardNumber: formatted
+                  });
+                }}
+                className="w-full px-3 py-2 border rounded font-mono"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Expiry Date
+                </label>
+                <input
+                  type="text"
+                  maxLength={5}
+                  placeholder="MM/YY"
+                  value={paymentDetails.expiryDate}
+                  onChange={(e) => {
+                    const formatted = e.target.value
+                      .replace(/\D/g, '')
+                      .match(/(\d{0,2})(\d{0,2})/);
+                    if (formatted) {
+                      setPaymentDetails({
+                        ...paymentDetails,
+                        expiryDate: formatted[2] 
+                          ? `${formatted[1]}/${formatted[2]}`
+                          : formatted[1]
+                      });
+                    }
+                  }}
+                  className="w-full px-3 py-2 border rounded font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  CVV
+                </label>
+                <input
+                  type="text"
+                  maxLength={3}
+                  placeholder="123"
+                  value={paymentDetails.cvv}
+                  onChange={(e) => setPaymentDetails({
+                    ...paymentDetails,
+                    cvv: e.target.value.replace(/\D/g, '')
+                  })}
+                  className="w-full px-3 py-2 border rounded font-mono"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Card Holder Name
+              </label>
+              <input
+                type="text"
+                placeholder="JOHN DOE"
+                value={paymentDetails.cardName}
+                onChange={(e) => setPaymentDetails({
+                  ...paymentDetails,
+                  cardName: e.target.value.toUpperCase()
+                })}
+                className="w-full px-3 py-2 border rounded font-mono"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Summary */}
+        <div className="border-t mt-8 pt-6">
+          <div className="space-y-2">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg pt-2">
+              <span>Total</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
 

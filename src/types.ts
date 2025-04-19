@@ -67,6 +67,12 @@ export interface BackendOrder {
   selected_color: string;
   status: 'paid' | 'assigned' | 'shipped' | 'delivered';
   assigned_rider?: string;
+  shipping_details: {
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+  };
 }
 
 export interface BackendRider {

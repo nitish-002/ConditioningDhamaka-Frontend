@@ -188,6 +188,10 @@ export default function RiderPage() {
                     <h4 className="font-medium text-slate-800">Shipping Details</h4>
                   </div>
                   <div className="text-sm text-slate-600 space-y-1">
+                    <p>Name: {selectedOrder.shipping_details.name}</p>
+                    <p>Email: {selectedOrder.shipping_details.email}</p>
+                    <p>Phone: {selectedOrder.shipping_details.phone}</p>
+                    <p>Address: {selectedOrder.shipping_details.address}</p>
                     <p>Order Date: {new Date(selectedOrder._id.substring(0, 8)).toLocaleDateString()}</p>
                     <p>Status: {selectedOrder.status}</p>
                   </div>
