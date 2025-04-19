@@ -35,23 +35,33 @@ export default function ProfilePage() {
   if (!user) return <div className="text-center py-12">User not found</div>;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <BackButton />
-      <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-gray-600">Name</div>
-            <div>{user.name}</div>
-            
-            <div className="text-gray-600">Email</div>
-            <div>{user.email}</div>
-            
-            <div className="text-gray-600">Role</div>
-            <div className="capitalize">{user.role}</div>
-            
-            <div className="text-gray-600">Member Since</div>
-            <div>{new Date(user.createdAt).toLocaleDateString()}</div>
+    <div className="bg-white min-h-screen">
+      <div className="bg-gradient-to-r from-cyan-800 to-blue-900 text-white py-8 px-6 w-full">
+        <div className="container mx-auto">
+          <h1 className="text-4xl font-bold mb-3">Profile</h1>
+        </div>
+      </div>
+
+      <div className="max-w-[1500px] mx-auto px-4 py-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <BackButton />
+          <div className="bg-white rounded-lg shadow p-6">
+            <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-gray-600">Name</div>
+                <div>{user.name}</div>
+                
+                <div className="text-gray-600">Email</div>
+                <div>{user.email}</div>
+                
+                <div className="text-gray-600">Role</div>
+                <div className="capitalize">{user.role}</div>
+                
+                <div className="text-gray-600">Member Since</div>
+                <div>{new Date(user.createdAt).toLocaleDateString()}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

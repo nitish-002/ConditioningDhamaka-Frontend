@@ -107,230 +107,224 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold mb-4">No items to checkout</h2>
-        <button
-          onClick={() => navigate('/')}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Continue Shopping
-        </button>
+      <div className="bg-white min-h-screen">
+        <div className="container mx-auto px-6 py-12 text-center">
+          <h2 className="text-2xl font-medium text-gray-900 mb-4">No items to checkout</h2>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-2 rounded-lg font-medium"
+          >
+            Continue Shopping
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <BackButton />
-      <h1 className="text-2xl font-bold mb-8">Checkout</h1>
-      
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-        {cart.map((item) => (
-          <div
-            key={`${item.product._id}-${item.selectedColor}-${item.selectedSize}`}
-            className="flex justify-between py-2"
-          >
-            <span>
-              {item.product.title} x {item.quantity}
-              <span className="text-gray-600 text-sm">
-                ({item.selectedColor}, {item.selectedSize})
-              </span>
-            </span>
-            <span>${(item.product.price * item.quantity).toFixed(2)}</span>
+    <div className="bg-white min-h-screen">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-cyan-800 to-blue-900 text-white py-8 px-6 w-full">
+        <div className="container mx-auto">
+          <h1 className="text-4xl font-bold mb-3">Checkout</h1>
+          <p className="text-xl opacity-90">Complete your purchase</p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form Section */}
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Shipping Information */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h2 className="text-2xl font-medium text-gray-900 mb-6">Shipping Information</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={customerInfo.name}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Address
+                    </label>
+                    <textarea
+                      required
+                      value={customerInfo.address}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={customerInfo.phone}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Information */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h2 className="text-2xl font-medium text-gray-900 mb-6">Payment Information</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Card Number
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={19}
+                      placeholder="1234 5678 9012 3456"
+                      value={paymentDetails.cardNumber}
+                      onChange={(e) => {
+                        const formatted = e.target.value
+                          .replace(/\s/g, '')
+                          .match(/.{1,4}/g)?.join(' ') || '';
+                        setPaymentDetails({
+                          ...paymentDetails,
+                          cardNumber: formatted
+                        });
+                      }}
+                      className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Expiry Date
+                      </label>
+                      <input
+                        type="text"
+                        maxLength={5}
+                        placeholder="MM/YY"
+                        value={paymentDetails.expiryDate}
+                        onChange={(e) => {
+                          const formatted = e.target.value
+                            .replace(/\D/g, '')
+                            .match(/(\d{0,2})(\d{0,2})/);
+                          if (formatted) {
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              expiryDate: formatted[2] 
+                                ? `${formatted[1]}/${formatted[2]}`
+                                : formatted[1]
+                            });
+                          }
+                        }}
+                        className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        CVV
+                      </label>
+                      <input
+                        type="text"
+                        maxLength={3}
+                        placeholder="123"
+                        value={paymentDetails.cvv}
+                        onChange={(e) => setPaymentDetails({
+                          ...paymentDetails,
+                          cvv: e.target.value.replace(/\D/g, '')
+                        })}
+                        className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Card Holder Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="JOHN DOE"
+                      value={paymentDetails.cardName}
+                      onChange={(e) => setPaymentDetails({
+                        ...paymentDetails,
+                        cardName: e.target.value.toUpperCase()
+                      })}
+                      className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
-        ))}
-        <div className="border-t mt-4 pt-4">
-          <div className="flex justify-between font-bold">
-            <span>Total</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-          <div className="mt-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={customerInfo.email}
-              onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
-              className="w-full px-3 py-2 border rounded"
-            />
+
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-8">
+              <h2 className="text-2xl font-medium text-gray-900 mb-6">Order Summary</h2>
+              <div className="divide-y">
+                {cart.map((item) => (
+                  <div
+                    key={`${item.product._id}-${item.selectedColor}-${item.selectedSize}`}
+                    className="py-3"
+                  >
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="font-medium text-gray-900">{item.product.title}</p>
+                        <p className="text-sm text-gray-600">
+                          {item.quantity}x | {item.selectedColor}, {item.selectedSize}
+                        </p>
+                      </div>
+                      <span className="font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t mt-4 pt-4 space-y-2">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span>₹{total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div className="flex justify-between text-lg font-medium text-gray-900 pt-2">
+                  <span>Total</span>
+                  <span>₹{total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3 rounded-lg font-medium"
+              >
+                {loading ? 'Processing...' : 'Place Order'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded">
-            {error}
-          </div>
-        )}
-        
-        <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              required
-              value={customerInfo.name}
-              onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-              className="w-full px-3 py-2 border rounded"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Address
-            </label>
-            <textarea
-              required
-              value={customerInfo.address}
-              onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
-              className="w-full px-3 py-2 border rounded"
-              rows={3}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              required
-              value={customerInfo.phone}
-              onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-              className="w-full px-3 py-2 border rounded"
-            />
-          </div>
-        </div>
-
-        {/* Add Payment Information Section */}
-        <div className="border-t mt-8 pt-8">
-          <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Card Number
-              </label>
-              <input
-                type="text"
-                maxLength={19}
-                placeholder="1234 5678 9012 3456"
-                value={paymentDetails.cardNumber}
-                onChange={(e) => {
-                  const formatted = e.target.value
-                    .replace(/\s/g, '')
-                    .match(/.{1,4}/g)?.join(' ') || '';
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    cardNumber: formatted
-                  });
-                }}
-                className="w-full px-3 py-2 border rounded font-mono"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Expiry Date
-                </label>
-                <input
-                  type="text"
-                  maxLength={5}
-                  placeholder="MM/YY"
-                  value={paymentDetails.expiryDate}
-                  onChange={(e) => {
-                    const formatted = e.target.value
-                      .replace(/\D/g, '')
-                      .match(/(\d{0,2})(\d{0,2})/);
-                    if (formatted) {
-                      setPaymentDetails({
-                        ...paymentDetails,
-                        expiryDate: formatted[2] 
-                          ? `${formatted[1]}/${formatted[2]}`
-                          : formatted[1]
-                      });
-                    }
-                  }}
-                  className="w-full px-3 py-2 border rounded font-mono"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  CVV
-                </label>
-                <input
-                  type="text"
-                  maxLength={3}
-                  placeholder="123"
-                  value={paymentDetails.cvv}
-                  onChange={(e) => setPaymentDetails({
-                    ...paymentDetails,
-                    cvv: e.target.value.replace(/\D/g, '')
-                  })}
-                  className="w-full px-3 py-2 border rounded font-mono"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Card Holder Name
-              </label>
-              <input
-                type="text"
-                placeholder="JOHN DOE"
-                value={paymentDetails.cardName}
-                onChange={(e) => setPaymentDetails({
-                  ...paymentDetails,
-                  cardName: e.target.value.toUpperCase()
-                })}
-                className="w-full px-3 py-2 border rounded font-mono"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Summary */}
-        <div className="border-t mt-8 pt-6">
-          <div className="space-y-2">
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Shipping</span>
-              <span>Free</span>
-            </div>
-            <div className="flex justify-between font-bold text-lg pt-2">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 mt-6 ${
-            loading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          {loading ? 'Processing...' : 'Place Order'}
-        </button>
-      </form>
-
       {showCustomerLoginModal && (
         <CustomerLoginModal 
           onClose={() => setShowCustomerLoginModal(false)}
-          onSwitchToStaff={() => {}} // Empty function since we don't need staff login here
+          onSwitchToStaff={() => {}}
         />
       )}
     </div>

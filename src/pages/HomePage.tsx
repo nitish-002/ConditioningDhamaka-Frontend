@@ -83,124 +83,143 @@ export default function HomePage() {
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div className="bg-white min-h-screen">
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-8 px-4 mb-6">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4">Summer Collection 2024</h1>
-          <p className="text-xl opacity-90">Get up to 50% off on selected items</p>
+      <div className="bg-gradient-to-r from-cyan-800 to-blue-900 text-white py-6 px-4">
+        <div className="max-w-[1500px] mx-auto">
+          <h1 className="text-3xl font-bold mb-2">Welcome to ConditioningDhamaka</h1>
+          <p className="text-lg opacity-90">Feel the Breeze of Amazing Deals</p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex gap-6">
+      <div className="max-w-[1500px] mx-auto px-4 py-6">
+        <div className="flex gap-4">
           {/* Filters Sidebar */}
-          <div className="hidden md:block w-64 bg-white p-4 rounded-lg shadow-sm h-fit border border-slate-200">
-            <h3 className="font-semibold mb-4 text-slate-800">Filters</h3>
-            
-            <div className="mb-6">
-              <h4 className="text-sm font-medium mb-2 text-slate-700">Price Range</h4>
-              <input 
-                type="range" 
-                className="w-full accent-indigo-600" 
-                min="0" 
-                max={maxPrice} 
-                value={priceRange}
-                onChange={(e) => setPriceRange(Number(e.target.value))}
-              />
-              <div className="flex justify-between text-sm text-slate-600">
-                <span>$0</span>
-                <span>${priceRange}</span>
+          <div className="w-64 shrink-0">
+            <div className="bg-white p-4 border border-gray-200 rounded shadow-sm">
+              <h3 className="text-lg font-medium mb-4 text-gray-900">Filters</h3>
+              
+              {/* Price Range */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium mb-2 text-gray-700">Price</h4>
+                <input 
+                  type="range" 
+                  className="w-full accent-cyan-500" 
+                  min="0" 
+                  max={maxPrice} 
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(Number(e.target.value))}
+                />
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>₹0</span>
+                  <span>₹{priceRange}</span>
+                </div>
               </div>
-            </div>
 
-            <div className="mb-6">
-              <h4 className="text-sm font-medium mb-2 text-slate-700">Colors</h4>
-              <div className="space-y-2">
-                {allColors.map(color => (
-                  <label key={color} className="flex items-center gap-2 text-slate-600 hover:text-slate-800">
-                    <input
-                      type="checkbox"
-                      checked={selectedColors.includes(color)}
-                      onChange={() => setSelectedColors(prev =>
-                        prev.includes(color)
-                          ? prev.filter(c => c !== color)
-                          : [...prev, color]
+              {/* Colors */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium mb-2 text-gray-700">Colors</h4>
+                <div className="space-y-2">
+                  {allColors.map(color => (
+                    <label key={color} className="flex items-center gap-2 text-gray-600 hover:text-cyan-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedColors.includes(color)}
+                        onChange={() => setSelectedColors(prev =>
+                          prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]
+                        )}
+                        className="accent-cyan-500"
+                      />
+                      {color}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sizes */}
+              <div>
+                <h4 className="text-sm font-medium mb-2 text-gray-700">Sizes</h4>
+                <div className="flex flex-wrap gap-2">
+                  {allSizes.map(size => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSizes(prev =>
+                        prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]
                       )}
-                      className="accent-indigo-600"
-                    />
-                    {color}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-sm font-medium mb-2 text-slate-700">Sizes</h4>
-              <div className="flex flex-wrap gap-2">
-                {allSizes.map(size => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSizes(prev =>
-                      prev.includes(size)
-                        ? prev.filter(s => s !== size)
-                        : [...prev, size]
-                    )}
-                    className={`w-8 h-8 rounded-full border ${
-                      selectedSizes.includes(size)
-                        ? 'bg-indigo-600 text-white border-indigo-600'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-600'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                      className={`px-3 py-1 rounded border ${
+                        selectedSizes.includes(size)
+                          ? 'bg-cyan-600 text-white border-cyan-600'
+                          : 'bg-white text-gray-600 border-gray-300 hover:border-cyan-500'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Product Grid */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Search Bar */}
+            <div className="mb-6 flex gap-4">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                />
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="md:hidden px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                <Filter className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Products */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map(product => (
                 <div 
-                  key={product._id} 
+                  key={product._id}
                   onClick={() => navigate(`/product/${product._id}`)}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-200 cursor-pointer"
+                  className="bg-white border border-gray-200 rounded-lg hover:shadow-lg transition-shadow group"
                 >
-                  <img
-                    src={product.image} // This now uses the image URL from the API
-                    alt={product.title}
-                    className="w-full h-48 object-contain p-4"
-                  />
+                  <div className="relative pb-[100%]">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="absolute inset-0 w-full h-full object-contain p-4"
+                    />
+                  </div>
                   <div className="p-4">
-                    <h2 className="font-medium mb-1 text-slate-800 hover:text-indigo-600">
+                    <h2 className="font-medium text-gray-900 group-hover:text-cyan-600 line-clamp-2">
                       {product.title}
                     </h2>
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center text-amber-400">
+                    <div className="flex items-center mt-2 mb-1">
+                      <div className="flex items-center text-cyan-500">
                         <Star className="h-4 w-4 fill-current" />
-                        <span className="ml-1 text-sm">4.5</span>
+                        <span className="ml-1 text-sm text-gray-600">4.5</span>
                       </div>
-                      <span className="mx-2 text-slate-200">|</span>
-                      <span className="text-sm text-slate-500">150 reviews</span>
                     </div>
-                    <div className="mb-3">
-                      <span className="text-xl font-bold text-slate-800">${product.price}</span>
-                      <span className="ml-2 text-sm text-slate-400 line-through">${(product.price * 1.2).toFixed(2)}</span>
-                      <span className="ml-2 text-sm text-emerald-600">20% off</span>
-                    </div>
-                    <div className="flex items-center text-sm text-slate-500 mb-3">
-                      <Truck className="h-4 w-4 mr-1" />
-                      Free Delivery by Tomorrow
+                    <div className="flex items-center justify-between mt-2">
+                      <div>
+                        <span className="text-xl font-bold text-gray-900">₹{product.price}</span>
+                        <span className="ml-2 text-sm text-gray-500 line-through">₹{(product.price * 1.2).toFixed(2)}</span>
+                      </div>
                     </div>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent navigation when clicking add to cart
+                        e.stopPropagation();
                         handleAddToCart(product);
                       }}
-                      className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition-colors"
+                      className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-lg font-medium transition-colors"
                     >
                       Add to Cart
                     </button>

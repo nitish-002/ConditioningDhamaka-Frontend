@@ -28,85 +28,103 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
-        <button
-          onClick={() => navigate('/')}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Continue Shopping
-        </button>
+      <div className="bg-white min-h-screen">
+        <div className="max-w-[1500px] mx-auto px-4 py-12 text-center">
+          <h2 className="text-2xl font-medium text-gray-900 mb-4">Your cart is empty</h2>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-2 rounded-lg font-medium"
+          >
+            Continue Shopping
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <BackButton />
-      <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
-      
-      <div className="bg-white rounded-lg shadow-md p-6">
-        {cart.map((item) => (
-          <div
-            key={`${item.product._id}-${item.selectedColor}-${item.selectedSize}`}
-            className="flex items-center py-4 border-b last:border-b-0"
-          >
-            <img
-              src={item.product.image} // This now uses the image URL from the API
-              alt={item.product.title}
-              className="w-24 h-24 object-cover rounded"
-            />
-            
-            <div className="flex-1 ml-6">
-              <h3 className="text-lg font-semibold">{item.product.title}</h3>
-              <p className="text-gray-600">
-                Color: {item.selectedColor}, Size: {item.selectedSize}
-              </p>
-              <div className="flex items-center mt-2">
-                <button
-                  onClick={() => updateCartItemQuantity(item.product._id, Math.max(0, item.quantity - 1))}
-                  className="px-2 py-1 border rounded"
+    <div className="bg-white min-h-screen">
+      <div className="bg-gradient-to-r from-cyan-800 to-blue-900 text-white py-8 px-6 w-full">
+        <div className="container mx-auto">
+          <h1 className="text-4xl font-bold mb-3">Shopping Cart</h1>
+        </div>
+      </div>
+
+      <div className="max-w-[1500px] mx-auto px-4 py-6">
+        <BackButton />
+        <h1 className="text-2xl font-medium text-gray-900 mb-6">Shopping Cart</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+            <div className="bg-white border border-gray-200 rounded-lg divide-y">
+              {cart.map((item) => (
+                <div
+                  key={`${item.product._id}-${item.selectedColor}-${item.selectedSize}`}
+                  className="p-4 flex"
                 >
-                  -
-                </button>
-                <span className="mx-4">{item.quantity}</span>
+                  <img
+                    src={item.product.image}
+                    alt={item.product.title}
+                    className="w-24 h-24 object-contain"
+                  />
+                  
+                  <div className="flex-1 ml-4">
+                    <h3 className="font-medium text-gray-900">{item.product.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Color: {item.selectedColor}, Size: {item.selectedSize}
+                    </p>
+                    <div className="flex items-center mt-2 space-x-4">
+                      <div className="flex items-center border rounded-lg">
+                        <button
+                          onClick={() => updateCartItemQuantity(item.product._id, Math.max(0, item.quantity - 1))}
+                          className="px-3 py-1 hover:bg-gray-50"
+                        >
+                          -
+                        </button>
+                        <span className="px-3 py-1 border-x">{item.quantity}</span>
+                        <button
+                          onClick={() => updateCartItemQuantity(item.product._id, item.quantity + 1)}
+                          className="px-3 py-1 hover:bg-gray-50"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveItem(item.product._id)}
+                        className="text-sm text-red-600 hover:text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <p className="font-medium text-gray-900">₹{(item.product.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="space-y-4">
+                <div className="flex justify-between text-base">
+                  <span>Subtotal ({cart.length} items):</span>
+                  <span className="font-medium">₹{total.toFixed(2)}</span>
+                </div>
                 <button
-                  onClick={() => updateCartItemQuantity(item.product._id, item.quantity + 1)}
-                  className="px-2 py-1 border rounded"
+                  onClick={() => navigate('/checkout')}
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3 rounded-lg font-medium"
                 >
-                  +
+                  Proceed to Checkout
                 </button>
               </div>
             </div>
-            
-            <div className="text-right ml-6">
-              <p className="text-lg font-semibold">
-                ${(item.product.price * item.quantity).toFixed(2)}
-              </p>
-              <button
-                onClick={() => handleRemoveItem(item.product._id)}
-                className="text-red-500 hover:text-red-700 mt-2"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
-            </div>
           </div>
-        ))}
-        
-        <div className="mt-8 border-t pt-6">
-          <div className="flex justify-between items-center mb-6">
-            <span className="text-xl font-semibold">Total:</span>
-            <span className="text-2xl font-bold">${total.toFixed(2)}</span>
-          </div>
-          
-          <button
-            onClick={() => navigate('/checkout')}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-          >
-            Proceed to Checkout
-          </button>
         </div>
       </div>
+
       {itemToDelete && (
         <DeleteConfirmDialog
           onConfirm={confirmDelete}

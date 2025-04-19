@@ -135,13 +135,13 @@ export default function CustomerLoginModal({ onClose, onSwitchToStaff }: Custome
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+        <div className="bg-gradient-to-r from-cyan-600 to-purple-600 p-6">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold text-white">
                 {isLogin ? 'Welcome Back' : 'Create Account'}
               </h2>
-              <p className="text-indigo-100 mt-1">
+              <p className="text-cyan-100 mt-1">
                 {isLogin ? 'Sign in to continue' : 'Sign up to get started'}
               </p>
             </div>
@@ -156,7 +156,7 @@ export default function CustomerLoginModal({ onClose, onSwitchToStaff }: Custome
           <div className="mb-6">
             <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-lg">
               <button
-                className="py-2 rounded-lg text-sm font-medium transition-all bg-white text-indigo-600 shadow"
+                className="py-2 rounded-lg text-sm font-medium transition-all bg-white text-cyan-600 shadow"
               >
                 Customer Login
               </button>
