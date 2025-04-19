@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import CustomerLoginModal from '../components/CustomerLoginModal';
+import BackButton from '../components/BackButton';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -120,6 +121,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <BackButton />
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
       
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">

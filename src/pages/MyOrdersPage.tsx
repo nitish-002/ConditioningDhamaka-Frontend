@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { BackendOrder } from '../types';
+import BackButton from '../components/BackButton';
 
 export default function MyOrdersPage() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export default function MyOrdersPage() {
 
   return (
     <div>
+      <BackButton path="/" />
       <h1 className="text-2xl font-bold mb-8">My Orders</h1>
       
       <div className="space-y-6">

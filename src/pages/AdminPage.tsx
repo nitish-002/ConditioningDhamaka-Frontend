@@ -227,7 +227,7 @@ export default function AdminPage() {
                         <span className="ml-2 text-indigo-600 font-medium">#{assignedOrder._id}</span>
                       </div>
                     ) : (
-                      <p className="text-sm text-emerald-600 mt-3">Available for delivery</p>
+                      <p className="text-sm text-emerald-600 mt-3">Rider Online</p>
                     )}
                   </div>
                 );

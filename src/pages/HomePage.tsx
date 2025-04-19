@@ -166,7 +166,8 @@ export default function HomePage() {
               {filteredProducts.map(product => (
                 <div 
                   key={product._id} 
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-200"
+                  onClick={() => navigate(`/product/${product._id}`)}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-200 cursor-pointer"
                 >
                   <img
                     src={product.image} // This now uses the image URL from the API

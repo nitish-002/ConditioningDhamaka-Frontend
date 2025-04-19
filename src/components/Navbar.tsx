@@ -84,6 +84,13 @@ export default function Navbar() {
                   >
                     Dashboard
                   </Link>
+                  <Link 
+                    to="/profile" 
+                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                  >
+                    <User size={20} />
+                    <span className="hidden md:inline">Profile</span>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-1 text-gray-600 hover:text-gray-800"

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
+import BackButton from '../components/BackButton';
 
 export default function CartPage() {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export default function CartPage() {
 
   return (
     <div>
+      <BackButton />
       <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
       
       <div className="bg-white rounded-lg shadow-md p-6">
