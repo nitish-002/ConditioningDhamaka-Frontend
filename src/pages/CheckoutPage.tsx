@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
-import LoginModal from '../components/LoginModal';
+import CustomerLoginModal from '../components/CustomerLoginModal';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, currentUser, placeOrder } = useStore();
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showCustomerLoginModal, setShowCustomerLoginModal] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     address: '',
@@ -59,7 +59,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     
     if (!currentUser) {
-      setShowLoginModal(true);
+      setShowCustomerLoginModal(true);
       return;
     }
 
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
       const authData = await authCheck.json();
       
       if (!authData.authenticated) {
-        setShowLoginModal(true);
+        setShowCustomerLoginModal(true);
         throw new Error('Please log in again');
       }
 
@@ -206,8 +206,11 @@ export default function CheckoutPage() {
         </button>
       </form>
 
-      {showLoginModal && (
-        <LoginModal onClose={() => setShowLoginModal(false)} />
+      {showCustomerLoginModal && (
+        <CustomerLoginModal 
+          onClose={() => setShowCustomerLoginModal(false)}
+          onSwitchToStaff={() => {}} // Empty function since we don't need staff login here
+        />
       )}
     </div>
   );

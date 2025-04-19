@@ -4,9 +4,11 @@ import { ShoppingCart, User, LogOut } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import LoginModal from './LoginModal';
 import LogoutConfirmDialog from './LogoutConfirmDialog';
+import CustomerLoginModal from './CustomerLoginModal';
 
 export default function Navbar() {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showCustomerLoginModal, setShowCustomerLoginModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { cart, currentUser, setCurrentUser, clearCart } = useStore();
   const navigate = useNavigate();
@@ -30,6 +32,20 @@ export default function Navbar() {
     setCurrentUser(null);
     setShowLogoutConfirm(false);
     navigate('/');
+  };
+
+  const handleLoginClick = () => {
+    setShowCustomerLoginModal(true);
+  };
+
+  const handleSwitchToStaff = () => {
+    setShowCustomerLoginModal(false);
+    setShowLoginModal(true);
+  };
+
+  const handleSwitchToCustomer = () => {
+    setShowLoginModal(false);
+    setShowCustomerLoginModal(true);
   };
   
   return (
@@ -78,7 +94,7 @@ export default function Navbar() {
                 </div>
               ) : (
                 <button
-                  onClick={() => setShowLoginModal(true)}
+                  onClick={handleLoginClick}
                   className="flex items-center space-x-1 text-gray-600 hover:text-gray-800"
                 >
                   <User className="h-6 w-6" />
@@ -89,8 +105,18 @@ export default function Navbar() {
           </div>
         </div>
         
+        {showCustomerLoginModal && (
+          <CustomerLoginModal 
+            onClose={() => setShowCustomerLoginModal(false)}
+            onSwitchToStaff={handleSwitchToStaff}
+          />
+        )}
+        
         {showLoginModal && (
-          <LoginModal onClose={() => setShowLoginModal(false)} />
+          <LoginModal 
+            onClose={() => setShowLoginModal(false)} 
+            onSwitchToCustomer={handleSwitchToCustomer}
+          />
         )}
       </nav>
       {showLogoutConfirm && (

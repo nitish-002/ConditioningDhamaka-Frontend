@@ -5,9 +5,10 @@ import { registerWithMongoDB } from '../services/auth';
 
 interface LoginModalProps {
   onClose: () => void;
+  onSwitchToCustomer?: () => void;  // Add this prop
 }
 
-export default function LoginModal({ onClose }: LoginModalProps) {
+export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [isStaffLogin, setIsStaffLogin] = useState(false);
   const [role, setRole] = useState<'admin' | 'rider'>('admin');
@@ -113,6 +114,12 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       setError(err instanceof Error ? err.message : 'Authentication failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleRedirect = () => {
+    if (onSwitchToCustomer) {
+      onSwitchToCustomer();
     }
   };
 
@@ -274,16 +281,26 @@ export default function LoginModal({ onClose }: LoginModalProps) {
 
             {/* Only show account toggle for non-staff login */}
             {!isStaffLogin && (
-              <p className="text-center text-sm text-slate-600">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+              <div className="text-center text-sm text-slate-600 space-y-2">
+                <p>
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="text-indigo-600 hover:text-indigo-700 font-medium"
+                  >
+                    {isLogin ? 'Sign Up' : 'Sign In'}
+                  </button>
+                </p>
+                <p className="text-gray-500">or</p>
                 <button
                   type="button"
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={handleGoogleRedirect}
                   className="text-indigo-600 hover:text-indigo-700 font-medium"
                 >
-                  {isLogin ? 'Sign Up' : 'Sign In'}
+                  Sign in with Google
                 </button>
-              </p>
+              </div>
             )}
           </form>
         </div>

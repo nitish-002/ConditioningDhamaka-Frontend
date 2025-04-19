@@ -9,7 +9,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const RIDER_IDS = ['680228ebec524f3b3f3e4629', '680228e2ec524f3b3f3e4624'];
+  const RIDER_IDS = ['6802a6791b36d59f6fc56866', '6802a6841b36d59f6fc5686b'];
 
   useEffect(() => {
     fetchOrders();
@@ -60,13 +60,13 @@ export default function AdminPage() {
     // Filter out riders that are already delivering
     const availableRiderIds = RIDER_IDS.filter(riderId => 
       !orders.some(order => 
-      order.assigned_rider === riderId && 
-      (order.status === 'assigned' || order.status === 'shipped')
+        order.assigned_rider === riderId && 
+        order.status === 'shipped'
       )
     );
 
     if (availableRiderIds.length === 0) {
-      return null;
+      return RIDER_IDS[Math.floor(Math.random() * RIDER_IDS.length)]; // Return random rider even if all are busy
     }
 
     // Get random rider from available riders
