@@ -29,11 +29,18 @@ export default function CartPage() {
   if (cart.length === 0) {
     return (
       <div className="bg-white min-h-screen">
+        <div className="bg-gradient-to-r from-cyan-800 to-blue-900 text-white py-6 px-4">
+          <div className="max-w-[1500px] mx-auto">
+            <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
+            <p className="text-lg opacity-90">Your cart is currently empty</p>
+          </div>
+        </div>
+
         <div className="max-w-[1500px] mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-medium text-gray-900 mb-4">Your cart is empty</h2>
+          <h2 className="text-2xl font-medium text-gray-900 mb-4">Start adding items to your cart</h2>
           <button
             onClick={() => navigate('/')}
-            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-2 rounded-lg font-medium"
+            className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
           >
             Continue Shopping
           </button>

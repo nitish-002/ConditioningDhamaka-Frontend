@@ -30,33 +30,36 @@ export default function CheckoutPage() {
 
   const createOrder = async (item: any) => {
     try {
-      // Log the data being sent
-      console.log('Customer Info:', customerInfo);
-      
       const requestBody = {
         product_id: item.product._id,
         quantity: item.quantity,
         selected_size: item.selectedSize,
         selected_color: item.selectedColor,
         shipping_details: {
-          name: customerInfo.name,
-          address: customerInfo.address,
-          phone: customerInfo.phone,
-          email: customerInfo.email || currentUser?.email
+          name: customerInfo.name.trim(),
+          address: customerInfo.address.trim(),
+          phone: customerInfo.phone.trim(),
+          email: (customerInfo.email || currentUser?.email || '').trim()
+        },
+        payment_details: {
+          // Add mock payment details for processing
+          method: 'card',
+          status: 'paid'
         }
       };
-      
-      console.log('Sending order data:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch('http://localhost:5000/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          // Add auth header if needed
+          // 'Authorization': `Bearer ${currentUser?.token}`
+        },
         credentials: 'include',
         body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();
-      console.log('Order creation response:', data);
       
       if (!response.ok) {
         throw new Error(data.message || 'Failed to create order');
@@ -77,29 +80,39 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Validate required fields
+    if (!customerInfo.name || !customerInfo.address || !customerInfo.phone) {
+      setError('Please fill in all shipping information');
+      return;
+    }
+
+    // Validate payment details
+    if (!paymentDetails.cardNumber || !paymentDetails.expiryDate || 
+        !paymentDetails.cvv || !paymentDetails.cardName) {
+      setError('Please fill in all payment information');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      // Check authentication status first
-      const authCheck = await fetch('http://localhost:5000/auth/me', {
-        credentials: 'include'
-      });
-      const authData = await authCheck.json();
-      
-      if (!authData.authenticated) {
-        setShowCustomerLoginModal(true);
-        throw new Error('Please log in again');
+      // Process orders sequentially instead of parallel
+      for (const item of cart) {
+        try {
+          await createOrder(item);
+        } catch (error) {
+          console.error(`Failed to create order for item ${item.product._id}:`, error);
+          throw new Error('Failed to create one or more orders');
+        }
       }
 
-      // Create orders for each cart item
-      await Promise.all(cart.map(item => createOrder(item)));
-      
-      // Clear cart and redirect
+      // Only proceed if all orders were created successfully
       placeOrder(customerInfo);
       navigate('/my-orders');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to place order');
+      console.error('Order creation error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to place order. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -132,146 +145,144 @@ export default function CheckoutPage() {
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Form Section */}
-          <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Shipping Information */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 className="text-2xl font-medium text-gray-900 mb-6">Shipping Information</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={customerInfo.name}
-                      onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Address
-                    </label>
-                    <textarea
-                      required
-                      value={customerInfo.address}
-                      onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
-                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                      rows={3}
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={customerInfo.phone}
-                      onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                    />
-                  </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Shipping & Payment Forms */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Shipping Information */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <h2 className="text-2xl font-medium text-gray-900 mb-6">Shipping Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={customerInfo.name}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Address
+                  </label>
+                  <textarea
+                    required
+                    value={customerInfo.address}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    rows={3}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={customerInfo.phone}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  />
                 </div>
               </div>
+            </div>
 
-              {/* Payment Information */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 className="text-2xl font-medium text-gray-900 mb-6">Payment Information</h2>
-                <div className="space-y-4">
+            {/* Payment Information */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <h2 className="text-2xl font-medium text-gray-900 mb-6">Payment Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Card Number
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={19}
+                    placeholder="1234 5678 9012 3456"
+                    value={paymentDetails.cardNumber}
+                    onChange={(e) => {
+                      const formatted = e.target.value
+                        .replace(/\s/g, '')
+                        .match(/.{1,4}/g)?.join(' ') || '';
+                      setPaymentDetails({
+                        ...paymentDetails,
+                        cardNumber: formatted
+                      });
+                    }}
+                    className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Card Number
+                      Expiry Date
                     </label>
                     <input
                       type="text"
-                      maxLength={19}
-                      placeholder="1234 5678 9012 3456"
-                      value={paymentDetails.cardNumber}
+                      maxLength={5}
+                      placeholder="MM/YY"
+                      value={paymentDetails.expiryDate}
                       onChange={(e) => {
                         const formatted = e.target.value
-                          .replace(/\s/g, '')
-                          .match(/.{1,4}/g)?.join(' ') || '';
-                        setPaymentDetails({
-                          ...paymentDetails,
-                          cardNumber: formatted
-                        });
+                          .replace(/\D/g, '')
+                          .match(/(\d{0,2})(\d{0,2})/);
+                        if (formatted) {
+                          setPaymentDetails({
+                            ...paymentDetails,
+                            expiryDate: formatted[2] 
+                              ? `${formatted[1]}/${formatted[2]}`
+                              : formatted[1]
+                          });
+                        }
                       }}
                       className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                     />
                   </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        maxLength={5}
-                        placeholder="MM/YY"
-                        value={paymentDetails.expiryDate}
-                        onChange={(e) => {
-                          const formatted = e.target.value
-                            .replace(/\D/g, '')
-                            .match(/(\d{0,2})(\d{0,2})/);
-                          if (formatted) {
-                            setPaymentDetails({
-                              ...paymentDetails,
-                              expiryDate: formatted[2] 
-                                ? `${formatted[1]}/${formatted[2]}`
-                                : formatted[1]
-                            });
-                          }
-                        }}
-                        className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        CVV
-                      </label>
-                      <input
-                        type="text"
-                        maxLength={3}
-                        placeholder="123"
-                        value={paymentDetails.cvv}
-                        onChange={(e) => setPaymentDetails({
-                          ...paymentDetails,
-                          cvv: e.target.value.replace(/\D/g, '')
-                        })}
-                        className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                      />
-                    </div>
-                  </div>
-
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Card Holder Name
+                      CVV
                     </label>
                     <input
                       type="text"
-                      placeholder="JOHN DOE"
-                      value={paymentDetails.cardName}
+                      maxLength={3}
+                      placeholder="123"
+                      value={paymentDetails.cvv}
                       onChange={(e) => setPaymentDetails({
                         ...paymentDetails,
-                        cardName: e.target.value.toUpperCase()
+                        cvv: e.target.value.replace(/\D/g, '')
                       })}
                       className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                     />
                   </div>
                 </div>
+
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Card Holder Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="JOHN DOE"
+                    value={paymentDetails.cardName}
+                    onChange={(e) => setPaymentDetails({
+                      ...paymentDetails,
+                      cardName: e.target.value.toUpperCase()
+                    })}
+                    className="w-full px-3 py-2 border rounded font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  />
+                </div>
               </div>
-            </form>
+            </div>
           </div>
 
-          {/* Order Summary */}
+          {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-8">
               <h2 className="text-2xl font-medium text-gray-900 mb-6">Order Summary</h2>
@@ -311,14 +322,21 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3 rounded-lg font-medium"
+                disabled={loading || cart.length === 0}
+                className={`w-full mt-6 bg-cyan-500 hover:bg-cyan-600 text-white py-3 rounded-lg font-medium transition-colors ${
+                  (loading || cart.length === 0) ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 {loading ? 'Processing...' : 'Place Order'}
               </button>
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        </form>
       </div>
 
       {showCustomerLoginModal && (
