@@ -52,7 +52,7 @@ export default function CustomerLoginModal({ onClose, onSwitchToStaff }: Custome
         }
 
         // Continue with your existing MongoDB auth logic
-        const registerResponse = await fetch('http://localhost:5000/auth/register', {
+        const registerResponse = await fetch('https://conditioningdhamakabackend.onrender.com/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ export default function CustomerLoginModal({ onClose, onSwitchToStaff }: Custome
 
         // If registration fails because user exists, try logging in
         if (!registerResponse.ok) {
-          const loginResponse = await fetch('http://localhost:5000/auth/login', {
+          const loginResponse = await fetch('https://conditioningdhamakabackend.onrender.com/auth/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

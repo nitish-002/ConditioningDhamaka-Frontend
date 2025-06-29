@@ -16,7 +16,7 @@ export default function RiderPage() {
 
   const fetchAssignedOrders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/orders/assigned', {
+      const response = await fetch('https://conditioningdhamakabackend.onrender.com/orders/assigned', {
         credentials: 'include'
       });
 
@@ -36,7 +36,7 @@ export default function RiderPage() {
 
   const updateOrderStatus = async (orderId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/orders/${orderId}/status`, {
+      const response = await fetch(`https://conditioningdhamakabackend.onrender.com/orders/${orderId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -19,7 +19,7 @@ export default function MyOrdersPage() {
 
   const fetchMyOrders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/orders/me', {
+      const response = await fetch('https://conditioningdhamakabackend.onrender.com/orders/me', {
         credentials: 'include'
       });
 

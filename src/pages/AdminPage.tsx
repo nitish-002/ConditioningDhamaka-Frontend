@@ -6,10 +6,9 @@ export default function AdminPage() {
   const { currentUser } = useStore();
   const [orders, setOrders] = useState<BackendOrder[]>([]);
   const [riders, setRiders] = useState<BackendRider[]>([]);
+  const [riderIds, setRiderIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const RIDER_IDS = ['6802a6791b36d59f6fc56866', '6802a6841b36d59f6fc5686b'];
 
   useEffect(() => {
     fetchOrders();
@@ -18,7 +17,7 @@ export default function AdminPage() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/orders', {
+      const response = await fetch('https://conditioningdhamakabackend.onrender.com/orders', {
         credentials: 'include'
       });
 
@@ -39,7 +38,7 @@ export default function AdminPage() {
 
   const fetchRiders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/users/riders', {
+      const response = await fetch('https://conditioningdhamakabackend.onrender.com/users/riders', {
         credentials: 'include'
       });
 
@@ -50,15 +49,16 @@ export default function AdminPage() {
       const data = await response.json();
       console.log('Riders from backend:', data);
       setRiders(data.data);
+      // Extract and store only rider IDs
+      setRiderIds(data.data.map((rider: BackendRider) => rider._id));
     } catch (err) {
       console.error('Error fetching riders:', err);
-      // Don't set error state here to avoid blocking the entire page
     }
   };
 
   const getRandomAvailableRider = () => {
-    // Filter out riders that are already delivering
-    const availableRiderIds = RIDER_IDS.filter(riderId => 
+    // Use riderIds state instead of RIDER_IDS constant
+    const availableRiderIds = riderIds.filter(riderId => 
       !orders.some(order => 
         order.assigned_rider === riderId && 
         order.status === 'shipped'
@@ -66,10 +66,9 @@ export default function AdminPage() {
     );
 
     if (availableRiderIds.length === 0) {
-      return RIDER_IDS[Math.floor(Math.random() * RIDER_IDS.length)]; // Return random rider even if all are busy
+      return riderIds[Math.floor(Math.random() * riderIds.length)];
     }
 
-    // Get random rider from available riders
     const randomIndex = Math.floor(Math.random() * availableRiderIds.length);
     return availableRiderIds[randomIndex];
   };
@@ -83,7 +82,7 @@ export default function AdminPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/orders/${orderId}/assign`, {
+      const response = await fetch(`https://conditioningdhamakabackend.onrender.com/orders/${orderId}/assign`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

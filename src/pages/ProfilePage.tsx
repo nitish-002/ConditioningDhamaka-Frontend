@@ -13,7 +13,7 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/users/me', {
+      const response = await fetch('https://conditioningdhamakabackend.onrender.com/users/me', {
         credentials: 'include'
       });
       const data = await response.json();

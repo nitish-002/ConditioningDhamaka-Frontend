@@ -56,7 +56,7 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
           }
         }
 
-        const response = await fetch('http://localhost:5000/auth/login', {
+        const response = await fetch('https://conditioningdhamakabackend.onrender.com/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -89,7 +89,7 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
         }
 
         // Verify authentication immediately
-        const authCheck = await fetch('http://localhost:5000/auth/me', {
+        const authCheck = await fetch('https://conditioningdhamakabackend.onrender.com/auth/me', {
           credentials: 'include'
         });
         const authData = await authCheck.json();
