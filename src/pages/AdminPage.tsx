@@ -17,7 +17,7 @@ export default function AdminPage() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('https://conditioningdhamakabackend.onrender.com/orders', {
+      const response = await fetch('hhttps://conditioningdhamakabackend.onrender.com/orders', {
         credentials: 'include'
       });
 
@@ -38,7 +38,7 @@ export default function AdminPage() {
 
   const fetchRiders = async () => {
     try {
-      const response = await fetch('https://conditioningdhamakabackend.onrender.com/users/riders', {
+      const response = await fetch('hhttps://conditioningdhamakabackend.onrender.com/users/riders', {
         credentials: 'include'
       });
 
@@ -82,7 +82,7 @@ export default function AdminPage() {
         return;
       }
 
-      const response = await fetch(`https://conditioningdhamakabackend.onrender.com/orders/${orderId}/assign`, {
+      const response = await fetch(`hhttps://conditioningdhamakabackend.onrender.com/orders/${orderId}/assign`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

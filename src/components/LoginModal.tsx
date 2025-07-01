@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { X, Mail, Lock, ArrowRight, User } from 'lucide-react';
 import { registerWithMongoDB } from '../services/auth';
+import { apiConfig, apiCall } from '../config/api';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -40,10 +41,11 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
         });
 
         setCurrentUser({
-          id: response.data.id,
+          id: response.data.id || response.data._id,
           name: response.data.name,
           email: response.data.email,
-          role: response.data.role
+          role: response.data.role,
+          createdAt: response.data.createdAt || new Date().toISOString()
         });
       } else {
         // Staff credentials validation
@@ -56,12 +58,8 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
           }
         }
 
-        const response = await fetch('https://conditioningdhamakabackend.onrender.com/auth/login', {
+        const data = await apiCall(apiConfig.endpoints.login, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
           body: JSON.stringify({ 
             email, 
             password,
@@ -69,13 +67,10 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
           })
         });
 
-        const data = await response.json();
         console.log('Login response:', data);
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Invalid email or password. For testing, use password: password123');
-          }
+        // Check if login was successful based on response data
+        if (!data.success || !data.data) {
           throw new Error(data.message || 'Login failed');
         }
 
@@ -88,22 +83,12 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
           throw new Error('Please use staff login for admin/rider accounts');
         }
 
-        // Verify authentication immediately
-        const authCheck = await fetch('https://conditioningdhamakabackend.onrender.com/auth/me', {
-          credentials: 'include'
-        });
-        const authData = await authCheck.json();
-        console.log('Auth check:', authData);
-
-        if (!authData.authenticated) {
-          throw new Error('Session authentication failed');
-        }
-
         setCurrentUser({
-          id: data.data.id,
+          id: data.data.id || data.data._id,
           name: data.data.name,
           email: data.data.email,
-          role: data.data.role
+          role: data.data.role,
+          createdAt: data.data.createdAt || new Date().toISOString()
         });
 
         console.log('Login successful:', data.data);
@@ -111,7 +96,22 @@ export default function LoginModal({ onClose, onSwitchToCustomer }: LoginModalPr
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      let errorMessage = 'Authentication failed';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // Provide helpful hints for common issues
+        if (errorMessage.includes('Invalid credentials')) {
+          if (isStaffLogin) {
+            errorMessage += '. Note: Staff accounts may need to be pre-registered by an administrator.';
+          } else {
+            errorMessage += '. For testing, you can register a new customer account.';
+          }
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

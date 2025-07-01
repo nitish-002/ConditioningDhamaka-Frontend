@@ -23,7 +23,7 @@ export default function ProductDetailsPage() {
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`https://conditioningdhamakabackend.onrender.com/products/${id}`);
+      const response = await fetch(`hhttps://conditioningdhamakabackend.onrender.com/products/${id}`);
       const data = await response.json();
       setProduct(data.data);
       setSelectedColor(data.data.colors[0]);

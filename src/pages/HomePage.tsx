@@ -26,7 +26,7 @@ export default function HomePage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('https://conditioningdhamakabackend.onrender.com/products');
+      const response = await fetch('hhttps://conditioningdhamakabackend.onrender.com/products');
       const data = await response.json();
       
       if (!response.ok) {

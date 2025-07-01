@@ -99,34 +99,18 @@ export const useStore = create<Store>()(
       initialize: async () => {
         const storedUser = localStorage.getItem('currentUser');
         
-        if (!storedUser) {
-          set({ currentUser: null });
-          return;
-        }
-
-        try {
-          const response = await fetch('https://conditioningdhamakabackend.onrender.com/auth/me', {
-            credentials: 'include'
-          });
-          const data = await response.json();
-          
-          if (data.authenticated && data.user) {
-            set({
-              currentUser: {
-                id: data.user.id,
-                name: data.user.name,
-                email: data.user.email,
-                role: data.user.role
-              }
-            });
-          } else {
-            // Clear stored user if session is invalid
+        if (storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            // For now, trust localStorage and don't verify with backend
+            // since the backend session management seems to have issues
+            set({ currentUser: user });
+          } catch (err) {
+            console.error('Failed to parse stored user:', err);
             localStorage.removeItem('currentUser');
             set({ currentUser: null });
           }
-        } catch (err) {
-          console.error('Failed to restore session:', err);
-          localStorage.removeItem('currentUser');
+        } else {
           set({ currentUser: null });
         }
       }

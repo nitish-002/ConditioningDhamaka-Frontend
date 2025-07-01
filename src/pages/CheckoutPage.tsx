@@ -48,7 +48,7 @@ export default function CheckoutPage() {
         }
       };
 
-      const response = await fetch('https://conditioningdhamakabackend.onrender.com/orders', {
+      const response = await fetch('hhttps://conditioningdhamakabackend.onrender.com/orders', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
